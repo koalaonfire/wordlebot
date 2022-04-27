@@ -1,3 +1,6 @@
+# Import
+from random import choice
+
 # List of all possible words
 word_list = [
 'aback','abase','abate','abbey','abbot','abhor','abide','abled','abode','abort','about','above','abuse','abyss','acorn','acrid','actor','acute','adage','adapt','adept','admin','admit','adobe','adopt','adore','adorn','adult','affix','afire','afoot','afoul','after','again','agape','agate','agent','agile','aging','aglow','agony','agora','agree','ahead','aider','aisle','alarm','album','alert','algae','alibi','alien','align','alike','alive','allay','alley','allot','allow','alloy','aloft','alone','along','aloof','aloud','alpha','altar','alter','amass','amaze','amber','amble','amend','amiss','amity','among','ample','amply','amuse','angel','anger','angle','angry','angst','anime','ankle','annex','annoy','annul','anode','antic','anvil','aorta','apart','aphid','aping','apnea','apple','apply','apron','aptly','arbor','ardor','arena','argue','arise','armor','aroma','arose','array','arrow','arson','artsy','ascot','ashen','aside','askew','assay','asset','atoll','atone','attic','audio','audit','augur','aunty','avail','avert','avian','avoid','await','awake','award','aware','awash','awful','awoke','axial','axiom','axion','azure',
@@ -121,21 +124,27 @@ def evaluate():
     for nl in grey_letters:
         grey(nl)
 
+def random():
+    if len(possible_word_list) >= 1:
+        rng = choice(possible_word_list)
+    else:
+        rng = choice(word_list)
+    print(rng)
+
 # Algorithm for Program
 while not game_won:
-    round = 1
-    print("Round: " + str(round))
-
     want_to_perform_action = True
     while want_to_perform_action:
-        action = input("\nWhat action would you want to perform?\n1) Key Information\n2) Evaluate Options\n3) End\n\nAction: ")
-        if action == '1':
-            key_information()
+        action = input("\nWhat action would you want to perform?\n1) Choose Random\n2) Key Information\n3) Evaluate Options\n4) End\n\nAction: ")
+        if action == "1":
+            random()
         elif action == '2':
+            key_information()
+        elif action == '3':
             evaluate()
             print("\nAll words in the game that have not been tested:\n" + str(word_list))
             print("\nThis is the most likely words:\n" + str(possible_word_list))
-        elif action == "3":
+        elif action == "4":
             exit()
         else:
             print("Invalid Input")
