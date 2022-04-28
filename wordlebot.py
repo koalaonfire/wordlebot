@@ -60,7 +60,7 @@ def grey(i):
         possible_word_list.remove(word)
     
 # def yellow(i):
-def yellow(i):
+def yellow(i, p):
     # Check word list
     add = []
     for word in word_list:
@@ -81,6 +81,14 @@ def yellow(i):
     possible_word_list.clear()
     for word in safe:
         possible_word_list.append(word)
+    # Remove same position 
+    remove = []
+    for word in possible_word_list:
+        if word[p] == i:
+            remove.append(word)
+            break
+    for word in remove:
+        possible_word_list.remove(word)
 
 def green(i, p):
     # Check word list
@@ -102,25 +110,46 @@ def green(i, p):
 
 # Create a key details function
 def key_information():
-    l = input('What is the letter: ')
-    type = input("Color of word (g/y/n): ")
-    if type == "n":
-        grey_letters.append(l)
-    elif type == "y":
-        yellow_letters.append(l)
-    elif type == "g":
-        p = int(input('Position of green letter: '))
-        p -= 1
-        green_letters.append([l, p])
+    # Initialisations
+    not_done = True
+    p_req = False
+    valid_input = True
+    type = input("Color(g/y/n): ")
+    # Get the color
+    if type == 'g':
+        color = 'g'
+        p_req = True
+    elif type == 'y':
+        color = 'y'
+        p_req = True
+    elif type == 'n':
+        color = 'n'
     else:
-        print("Invalid input")
+        print("Invalid Input")
+        valid_input = False
+    print("Enter 'qq' to quit")
+    # Algorithm
+    while not_done and valid_input:
+        l = input("Enter Letter: ")
+        if l == "qq":
+            not_done = False
+            break
+        if p_req:
+            p = int(input("Position: "))
+            p -= 1
+        if color == "n":
+            grey_letters.append(l)
+        elif color == "y":
+            yellow_letters.append([l,p])
+        elif color == "g":
+            green_letters.append([l,p])
 
 # Create an evaluate function
 def evaluate():
     for gl in green_letters:
         green(gl[0], gl[1])
     for yl in yellow_letters:
-        yellow(yl)
+        yellow(yl[0], yl[1])
     for nl in grey_letters:
         grey(nl)
 
@@ -131,20 +160,128 @@ def random():
         rng = choice(word_list)
     print(rng)
 
+def diagnos():
+    if len(grey_letters) >= 1:
+        print("Grey Letters:\n" + str(grey_letters))
+    if len(yellow_letters) >= 1:
+        print("Yellow Letters and impossible positions:\n" + str(yellow_letters))
+    if len(green_letters) >= 1:
+        print("Green Letters and mandatory positions:\n" + str(green_letters))
+
+def append():
+    editing = True
+    print("YOU ARE IN EDIT MODE")
+    action = input("\nWhat action would you want to perform?\n1) Remove Information\n2) Move Information\n3) Exit Edit Mode")
+    while editing:
+        # Exit
+        if action == "3":
+            editing == False
+            break
+        # Remove values
+        elif action == "1":
+            color = input("What color does the wrong input belong to(g/y/n): ")
+            # Remove from n
+            if color == "n":
+                print(grey_letters)
+                p = input("Position of letter: ")
+                p -= 1
+                grey_letters.remove(grey_letters[p])
+            # Remove from y
+            elif color == "y":
+                print(yellow_letters)
+                p = input("Position of set: ")
+                p -= 1
+                grey_letters.remove(yellow_letters[p])
+            # Remove from g
+            elif color == "g":
+                print(green_letters)
+                p = input("Position of set: ")
+                p -= 1
+                grey_letters.remove(green_letters[p])
+            else:
+                print("That was an invalid input\nExiting Edit Mode")
+                editing == False
+        # Move values
+        elif action == "2":
+            color1 = input("What color does the wrong input belong to(g/y/n): ")
+            if color1 == "g" or color1 == "y":
+                color1_duo = True
+            elif color1 == "n":
+                color1_duo = False
+            color2 = input("What color do you want to move it to(g/y/n): ")
+            if color2 == "g" or color2 == "y":
+                color2_duo = True
+            elif color2 == "n":
+                color2_duo = False
+            else:
+                print("That was an invalid input\nExiting Edit Mode")
+                editing == False
+            # Move g-y
+            if color1_duo and color2_duo:
+                if color1_duo == "g":
+                    print(green_letters)
+                    set = input("What set do you want to remove")
+                    set -= 1
+                    store = green_letters[set]
+                    yellow_letters.append(store)
+                elif color1_duo == "y":
+                    print(yellow_letters)
+                    set = input("What set do you want to remove")
+                    set -= 1
+                    store = yellow_letters[set]
+                    green_letters.append(store)
+            # Move g/y-n
+            elif not color2_duo:
+                if color1_duo == "g":
+                    print(green_letters)
+                    set = input("What set do you want to remove")
+                    set -= 1
+                    store = green_letters[set]
+                    grey_letters.append(store[0])
+                elif color1_duo == "y":
+                    print(yellow_letters)
+                    set = input("What set do you want to remove")
+                    set -= 1
+                    store = yellow_letters[set]
+                    grey_letters.append(store[0])
+            # Move n-g/y
+            elif not color1_duo:
+                print(grey_letters)
+                position = input("Position of letter: ")
+                position -= 1
+                store = grey_letters[position]
+                p = input("Whats the position of this letter: ")
+                if color2 == "g":
+                    green_letters.append([store, p])
+                elif color2 == "y":
+                    yellow_letters.append([store, p])
+                grey_letters.remove(store)
+        # Error
+        else:
+            print("That was an invalid input\nExiting Edit Mode")
+            editing == False
+
+
 # Algorithm for Program
 while not game_won:
     want_to_perform_action = True
     while want_to_perform_action:
-        action = input("\nWhat action would you want to perform?\n1) Choose Random\n2) Key Information\n3) Evaluate Options\n4) End\n\nAction: ")
+        action = input("\nWhat action would you want to perform?\n1) Choose Random\n2) Key Information\n3) Evaluate Options\n4) Diagnostics\n5) Append\n6) End\n\nAction: ")
         if action == "1":
             random()
         elif action == '2':
             key_information()
         elif action == '3':
             evaluate()
-            print("\nAll words in the game that have not been tested:\n" + str(word_list))
-            print("\nThis is the most likely words:\n" + str(possible_word_list))
+            if len(word_list) >= 1:
+                print("\nAll words in the game that have not been tested:\n" + str(word_list))
+            if len(possible_word_list) >= 1:
+                print("\nThis is the most likely words:\n" + str(possible_word_list))
         elif action == "4":
+            diagnos()
+        elif action == "5":
+            append()
+        elif action == "6":
             exit()
         else:
             print("Invalid Input")
