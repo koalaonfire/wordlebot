@@ -82,13 +82,13 @@ def yellow(i, p):
     for word in safe:
         possible_word_list.append(word)
     # Remove same position 
-    remove = []
+    safe1 = []
     for word in possible_word_list:
-        if word[p] == i:
-            remove.append(word)
-            break
-    for word in remove:
-        possible_word_list.remove(word)
+        if word[p] != i:
+            safe1.append(word)
+    possible_word_list.clear()
+    for word in safe1:
+        possible_word_list.append(word)
 
 def green(i, p):
     # Check word list
